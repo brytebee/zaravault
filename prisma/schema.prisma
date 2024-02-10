@@ -35,15 +35,25 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
+
+  cartId        String?     @unique
+  wishlistId   String?     @unique
+
+  orders        Order[]
+  purchases     Purchase[]
+
   accounts      Account[]
   sessions      Session[]
   Post          Post[]
   Comment       Comment[]
+
+  cart          Cart?
+  wishlist     Wishlist?
 }
 
 model VerificationToken {
@@ -54,28 +64,137 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Topic {
-  id          String @id @default(cuid())
-  slug        String @unique
-  description String
-  posts       Post[]
+model Category {
+  id        String @id @default(cuid())
+  name      String
+
+  products  Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id      String @id @default(cuid())
-  title   String
-  content String
-  userId  String
-  topicId String
+model Image {
+  id         String   @id @default(cuid())
+  url        String
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String @id @default(cuid())
+  slug        String @unique
+  description String
+  quantity    Int
+  price       Float
+
+  categoryId  String
+
+  images      Image[]
+  cartItems   CartItem[]
+  posts       Post[]
+  purchases   Purchase[]
+  items       OrderItem[]
+  carts       Cart[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  topic    Topic     @relation(fields: [topicId], references: [id])
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model CartItem {
+  id            String @id @default(cuid())
+  quantity      Int
+  productId     String
+  cartId        String
+  wishlistId    String
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart          Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  wishlist      Wishlist  @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id       String @id @default(cuid())
+  userId   String @unique
+  items    CartItem[]
+  products    Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Wishlist {
+  id         String @id @default(cuid())
+  userId     String @unique
+  items      CartItem[]
+  
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id          String @id @default(cuid())
+  userId      String
+  items       OrderItem[]
+  totalAmount Float
+  status      String
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OrderItem {
+  id          String @id @default(cuid())
+  quantity    Int
+  productId   String
+  orderId     String
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Purchase {
+  id            String @id @default(cuid())
+  userId        String
+  productId     String
+  quantity      Int
+  amount        Float
+  paymentMethod String
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model Post {
+  id          String @id @default(cuid())
+  title       String
+  content     String
+  userId      String
+  productId   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   comments Comment[]
 }
 
