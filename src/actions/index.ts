@@ -1,15 +1,5 @@
-"use server";
-
-import * as auth from "@/auth";
-
-export async function signInGit() {
-  return auth.signIn("github");
-}
-
-export async function signInGoog() {
-  return auth.signIn("google");
-}
-
-export async function signOut() {
-  return auth.signOut();
-}
+export { signInGoog } from "./google-sign-in";
+export { signInGit } from "./github-sign-in";
+export { signOut } from "./sign-out";
+export { createCategory } from "./create-category";
+export { createProduct } from "./create-product";
