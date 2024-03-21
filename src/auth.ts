@@ -6,12 +6,13 @@ import Google from "next-auth/providers/google";
 import credentials from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { User } from "@prisma/client";
-
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const AUTH_SECRET = process.env.AUTH_SECRET;
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  AUTH_SECRET,
+} from "@/utils/constants";
 
 if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET || !AUTH_SECRET) {
   throw new Error("Missing GitHub auth credentials!");

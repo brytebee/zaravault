@@ -43,11 +43,11 @@ export default function HeaderAuth() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <form action={actions.signInGoog}>
+          <Link href="/api/auth/register">
             <Button type="submit" color="primary" variant="flat">
               Sign Up
             </Button>
-          </form>
+          </Link>
         </NavbarItem>
       </>
     );
