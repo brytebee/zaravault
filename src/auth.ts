@@ -52,14 +52,6 @@ export const {
     maxAge: 60 * 60 * 30,
   },
   providers: [
-    Github({
-      clientId: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET,
-    }),
-    Google({
-      clientId: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-    }),
     credentials({
       name: "Credentials",
       credentials: {
@@ -82,6 +74,14 @@ export const {
         }
         return null;
       },
+    }),
+    Github({
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
+    }),
+    Google({
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {

@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
+import Link from "next/link";
 
 export default function HeaderAuth() {
   const session = useSession();
@@ -35,11 +36,11 @@ export default function HeaderAuth() {
     authContent = (
       <>
         <NavbarItem>
-          <form action={actions.signInGit}>
+          <Link href="/api/auth/signin">
             <Button type="submit" color="secondary" variant="bordered">
               Sign In
             </Button>
-          </form>
+          </Link>
         </NavbarItem>
         <NavbarItem>
           <form action={actions.signInGoog}>
