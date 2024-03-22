@@ -11,14 +11,14 @@ export const path = {
   categoryShow(catName: string) {
     return `/categories/${catName}`;
   },
-  products(catId: string) {
-    return `/categories/${catId}/products`;
+  products(catName: string) {
+    return `/categories/${catName}/products`;
   },
-  productCreate(catId: string) {
-    return `/categories/${catId}/products/new`;
+  productCreate(catName: string) {
+    return `/categories/${catName}/products/new`;
   },
-  productShow(catId: string, prodId: string) {
-    return `/categories/${catId}/products/${prodId}`;
+  productShow(catName: string, prodId: string) {
+    return `/categories/${catName}/products/${prodId}`;
   },
 };
 
