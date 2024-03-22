@@ -1,13 +1,13 @@
 "use client";
 
-import * as actions from "@/actions";
+import { createAccount } from "@/actions";
 import { Input } from "@nextui-org/react";
 import { useFormState } from "react-dom";
 import FormButton from "@/components/common/form-button";
 import Link from "next/link";
 
 export default function CreateAccountPage() {
-  const [formState, action] = useFormState(actions.createAccount, {});
+  const [formState, action] = useFormState(createAccount, {});
   return (
     <form action={action}>
       {formState.data?.message && (
