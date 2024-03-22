@@ -6,31 +6,8 @@ import { useFormState } from "react-dom";
 import FormButton from "@/components/common/form-button";
 import Link from "next/link";
 
-interface CreateAccState {
-  errors:
-    | {
-        name: string[] | never;
-        email: string[] | never;
-        password: string[] | never;
-        _form: string[] | never;
-      }
-    | never;
-  data:
-    | {
-        message: string[] | never;
-      }
-    | never;
-}
-
 export default function CreateAccountPage() {
-  const [formState, action] = useFormState(actions.createAccount, {
-    errors: {
-      email: [],
-      name: [],
-      password: [],
-      _form: [],
-    },
-  });
+  const [formState, action] = useFormState(actions.createAccount, {});
   return (
     <form action={action}>
       {formState.data?.message && (

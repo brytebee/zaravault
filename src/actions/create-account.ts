@@ -27,7 +27,7 @@ const RegisterSchema = z.object({
 export async function createAccount(
   formState: RegisterState,
   formData: FormData
-) {
+): Promise<RegisterState> {
   const validate = RegisterSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),

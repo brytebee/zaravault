@@ -1,4 +1,4 @@
-const path = {
+export const path = {
   home() {
     return "/";
   },
@@ -8,8 +8,8 @@ const path = {
   categoryCreate() {
     return "/categories/new";
   },
-  categoryShow(catId: string) {
-    return `/categories/${catId}`;
+  categoryShow(catName: string) {
+    return `/categories/${catName}`;
   },
   products(catId: string) {
     return `/categories/${catId}/products`;
