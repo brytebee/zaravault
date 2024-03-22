@@ -1,7 +1,7 @@
 "use client";
 
 import { createProduct } from "@/actions";
-import { Input } from "@nextui-org/react";
+import { Input, Textarea } from "@nextui-org/react";
 import { useFormState } from "react-dom";
 import FormButton from "@/components/common/form-button";
 import Link from "next/link";
@@ -30,7 +30,7 @@ export default function ProductCreateForm({ catName }: ProdCreateProps) {
           isInvalid={!!formState.errors?.slug}
           errorMessage={formState.errors?.slug?.join(", ")}
         />
-        <Input
+        <Textarea
           name="description"
           label="Briefly describe product"
           type="text"

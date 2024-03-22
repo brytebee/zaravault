@@ -24,10 +24,10 @@ const CreateProductSchema = z.object({
   slug: z
     .string()
     .min(3)
-    .regex(/^[-a-z]+$/),
+    .regex(/^[-a-zA-Z0-9]+$/),
   description: z.string().min(10),
-  quantity: z.coerce.number(),
-  price: z.coerce.number(),
+  quantity: z.coerce.number().gte(1),
+  price: z.coerce.number().gte(0.01),
 });
 
 export async function createProduct(
