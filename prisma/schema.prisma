@@ -69,6 +69,7 @@ model VerificationToken {
 model Category {
   id        String @id @default(cuid())
   name      String @unique
+  imageUrl  String?
 
   products  Product[]
 
@@ -97,7 +98,6 @@ model Product {
   posts       Post[]
   purchases   Purchase[]
   items       OrderItem[]
-  carts       Cart[]
   reviews     Review[]
 
   createdAt DateTime @default(now())
@@ -110,22 +110,23 @@ model CartItem {
   id            String @id @default(cuid())
   quantity      Int
   productId     String
-  cartId        String
-  wishlistId    String
+  cartId        String?
+  wishlistId    String?
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cart          Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  wishlist      Wishlist  @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  cart          Cart?      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  wishlist      Wishlist?  @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, wishlistId])
 }
 
 model Cart {
-  id       String @id @default(cuid())
-  userId   String @unique
-  items    CartItem[]
-  products    Product[]
+  id        String @id @default(cuid())
+  userId    String @unique
+  items     CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
