@@ -3,6 +3,7 @@
 import {
   Avatar,
   Button,
+  Image,
   NavbarItem,
   Popover,
   PopoverContent,
@@ -11,6 +12,7 @@ import {
 import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
 import Link from "next/link";
+import Cart from "./assets/svg/Cart";
 
 export default function HeaderAuth() {
   const session = useSession();
@@ -21,16 +23,22 @@ export default function HeaderAuth() {
     authContent = null;
   } else if (session.data?.user) {
     authContent = (
-      <Popover placement="left">
-        <PopoverTrigger>
-          <Avatar src={session.data.user.image || ""} />
-        </PopoverTrigger>
-        <PopoverContent>
-          <form action={actions.signOut}>
-            <Button type="submit">Sign Out</Button>
-          </form>
-        </PopoverContent>
-      </Popover>
+      <>
+        <Link className="flex" href="/cart">
+          <Cart count={5} />
+          Cart
+        </Link>
+        <Popover placement="left">
+          <PopoverTrigger>
+            <Avatar src={session.data.user.image || ""} />
+          </PopoverTrigger>
+          <PopoverContent>
+            <form action={actions.signOut}>
+              <Button type="submit">Sign Out</Button>
+            </form>
+          </PopoverContent>
+        </Popover>
+      </>
     );
   } else {
     authContent = (
