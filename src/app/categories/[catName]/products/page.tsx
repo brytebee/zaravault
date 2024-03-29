@@ -1,3 +1,5 @@
+import { createCart } from "@/actions";
+import FormButton from "@/components/common/form-button";
 import { db } from "@/db";
 import path from "@/path";
 import Link from "next/link";
@@ -26,12 +28,13 @@ export default async function ProductsPage({
         <div>
           {products.map((prod) => (
             // product card
-            <div>
+            <form action={createCart}>
               <p>{prod.slug}</p>
               <p>{prod.description}</p>
               <p>{prod.quantity}</p>
               <p>{prod.price}</p>
-            </div>
+              <FormButton>Add to Cart</FormButton>
+            </form>
           ))}
         </div>
       )}
