@@ -1,5 +1,4 @@
-import { createCart } from "@/actions";
-import FormButton from "@/components/common/form-button";
+import ProductToCart from "@/components/product/ProductToCart";
 import { db } from "@/db";
 import path from "@/path";
 import Link from "next/link";
@@ -17,8 +16,6 @@ export default async function ProductsPage({
     where: { category: { name: catName } },
   });
 
-  console.log(products);
-
   return (
     <div>
       Products page
@@ -28,13 +25,9 @@ export default async function ProductsPage({
         <div>
           {products.map((prod) => (
             // product card
-            <form action={createCart}>
-              <p>{prod.slug}</p>
-              <p>{prod.description}</p>
-              <p>{prod.quantity}</p>
-              <p>{prod.price}</p>
-              <FormButton>Add to Cart</FormButton>
-            </form>
+            <div key={prod.id}>
+              <ProductToCart prod={prod} />
+            </div>
           ))}
         </div>
       )}
