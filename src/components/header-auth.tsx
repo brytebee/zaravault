@@ -3,7 +3,6 @@
 import {
   Avatar,
   Button,
-  Image,
   NavbarItem,
   Popover,
   PopoverContent,
@@ -13,9 +12,11 @@ import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
 import Link from "next/link";
 import Cart from "./assets/svg/Cart";
+import { cartStore } from "@/store";
 
 export default function HeaderAuth() {
   const session = useSession();
+  const { count } = cartStore();
 
   let authContent: React.ReactNode;
 
@@ -25,7 +26,7 @@ export default function HeaderAuth() {
     authContent = (
       <>
         <Link className="flex" href="/cart">
-          <Cart count={5} />
+          <Cart count={count} />
           Cart
         </Link>
         <Popover placement="left">

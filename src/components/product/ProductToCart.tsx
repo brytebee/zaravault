@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import FormButton from "../common/form-button";
 import { createCart, createCartItem } from "@/actions";
 import { useSession } from "next-auth/react";
+import { cartStore } from "@/store";
 
 interface Props {
   prod: {
@@ -17,8 +18,10 @@ interface Props {
     updatedAt: Date;
   };
 }
+
 export default function ProductToCart({ prod }: Props) {
   const session = useSession();
+  const { addItem } = cartStore();
   const [error, setError] = useState(null);
 
   const handler = async (e: FormEvent<HTMLFormElement>) => {
@@ -38,7 +41,7 @@ export default function ProductToCart({ prod }: Props) {
         formData.append("productId", prod.id);
 
         const item = await createCartItem(formData);
-
+        addItem();
         // @ts-ignore
         if (item.errors) {
           // @ts-ignore
