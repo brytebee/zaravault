@@ -86,18 +86,17 @@ export const {
     }),
   ],
   callbacks: {
-    async session({ session, user }: any) {
-      if (session && user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
-    jwt: async ({ token, user }) => {
+    async jwt({ token, user }) {
       if (user) {
-        token.email = user.email;
-        token.userId = user.id;
+        token = { ...token, ...user };
       }
       return token;
+    },
+    async session({ session, token }: any) {
+      if (token) {
+        session.user = token;
+      }
+      return session;
     },
   },
   secret: AUTH_SECRET,
