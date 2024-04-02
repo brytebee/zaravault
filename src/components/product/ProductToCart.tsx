@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import FormButton from "../common/form-button";
-import { createCart } from "@/actions";
-import { useFormState } from "react-dom";
+import { createCart, createCartItem } from "@/actions";
+import { useSession } from "next-auth/react";
 
 interface Props {
   prod: {
@@ -18,32 +18,45 @@ interface Props {
   };
 }
 export default function ProductToCart({ prod }: Props) {
-  const [formState, cartAction] = useFormState(createCart, {});
-  const [formStateForItem, itemAction] = useFormState(createCart, {});
-  // const handler = async (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   try {
-  //     // get the cartID if exist
-  //     // create a new cart for user
-  //     const cart = await cartAction();
-  //     console.log(cart);
+  const session = useSession();
+  const [error, setError] = useState(null);
 
-  //     // create a new cart item
-  //     const item = await itemAction();
-  //     console.log(item);
+  const handler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
-  //     // increase the count on the nnavbar
-  //     // render cart on the cart page
-  //   } catch (error) {
-  //     // handle errors
-  //   }
-  // };
+    try {
+      const cart = await createCart();
+
+      // @ts-ignore
+      if (cart.errors) {
+        // @ts-ignore
+        setError(cart.errors);
+      } else {
+        // @ts-ignore
+        formData.append("cartId", cart.id);
+        formData.append("productId", prod.id);
+
+        const item = await createCartItem(formData);
+
+        // @ts-ignore
+        if (item.errors) {
+          // @ts-ignore
+          setError(item.errors);
+        }
+      }
+      // increase the count on the nnavbar
+      // render cart on the cart page
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        // @ts-ignore
+        setError({ _form: err.message });
+      }
+    }
+  };
 
   return (
-    <form action={cartAction} className="mb-4">
-      {formState?.errors?._form && (
-        <p className=" text-red-200">{formState.errors._form}</p>
-      )}
+    <form onSubmit={handler} className="mb-4">
       <p>{prod.slug}</p>
       <p>{prod.description}</p>
       <p className="mb-2">{prod.price}</p>
@@ -53,14 +66,18 @@ export default function ProductToCart({ prod }: Props) {
           <div className="my-2">
             <input
               type="number"
-              name=""
+              name="quantity"
               min={1}
               max={prod.quantity}
               defaultValue={1}
             />
             {prod.quantity}
           </div>
-          <FormButton>Add to Cart</FormButton>
+          {/* @ts-ignore */}
+          {error && <p className=" text-red-200">{error._form}</p>}
+          {session.status === "authenticated" && (
+            <FormButton>Add to Cart</FormButton>
+          )}
         </>
       ) : (
         <>

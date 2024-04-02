@@ -4,4 +4,5 @@ export { signOut } from "./sign-out";
 export { createCategory } from "./create-category";
 export { createProduct } from "./create-product";
 export { createAccount } from "./create-account";
-export { createCart } from './create-cart';
+export { createCart } from "./create-cart";
+export { createCartItem } from "./create-cart-item";

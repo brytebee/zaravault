@@ -4,14 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { Cart } from "@prisma/client";
 
-interface CartState {
-  errors?: {
-    _form?: string[];
-  };
-  data?: {};
-}
-
-export async function createCart(formState: CartState): Promise<CartState> {
+export async function createCart() {
   const session = await auth();
   if (!session || !session.user) {
     return {
@@ -33,9 +26,7 @@ export async function createCart(formState: CartState): Promise<CartState> {
         },
       });
     }
-    return {
-      data: cart,
-    };
+    return cart;
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
