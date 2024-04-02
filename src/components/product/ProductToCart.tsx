@@ -41,6 +41,22 @@ export default function ProductToCart({ prod }: Props) {
         formData.append("productId", prod.id);
 
         const item = await createCartItem(formData);
+
+        // increase the count on the navbar
+        console.log(item); // consider this item and implement the ffw:
+        // // Update the addItem function
+        // // // The count variable should reflect the currect no of item in the users cart
+        // // // Using the cartId, check the cartItems
+        // // // if the item already exited in the cart
+        // // // // Grab the current quantity and..
+        // // // // ...add it to the existing quantity but keep count the same
+        // // // if it did not exist, then increase count
+        // // // // Make sure the quantity isn't left out
+        // render cart on the cart page
+        // Work on create cart item
+        // // In the same cart, there should only be unique items,
+        // // Only quantity should increase when product already existed
+
         addItem();
         // @ts-ignore
         if (item.errors) {
@@ -48,8 +64,6 @@ export default function ProductToCart({ prod }: Props) {
           setError(item.errors);
         }
       }
-      // increase the count on the nnavbar
-      // render cart on the cart page
     } catch (err: unknown) {
       if (err instanceof Error) {
         // @ts-ignore
