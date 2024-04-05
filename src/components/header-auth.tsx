@@ -13,10 +13,11 @@ import * as actions from "@/actions";
 import Link from "next/link";
 import Cart from "./assets/svg/Cart";
 import { cartStore } from "@/store";
+import path from "@/path";
 
 export default function HeaderAuth() {
   const session = useSession();
-  const { count } = cartStore();
+  const { ids } = cartStore();
 
   let authContent: React.ReactNode;
 
@@ -25,8 +26,8 @@ export default function HeaderAuth() {
   } else if (session.data?.user) {
     authContent = (
       <>
-        <Link className="flex" href="/cart">
-          <Cart count={count} />
+        <Link className="flex" href={path.cart()}>
+          <Cart count={ids.length} />
           Cart
         </Link>
         <Popover placement="left">

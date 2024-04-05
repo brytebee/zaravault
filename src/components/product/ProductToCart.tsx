@@ -54,7 +54,7 @@ export default function ProductToCart({ prod }: ProdProps) {
         // // In the same cart, there should only be unique items,
         // // Only quantity should increase when product already existed
 
-        addItem();
+        addItem(prod.id);
         // @ts-ignore
         if (item.errors) {
           // @ts-ignore
@@ -74,8 +74,7 @@ export default function ProductToCart({ prod }: ProdProps) {
       <div className="flex items-center mb-4">
         {/* Add multi image funtionality later */}
         <Image
-          // @ts-ignore
-          src={prod.images[0].url}
+          src={prod.images?.[0]?.url ?? ""}
           alt={prod.slug}
           width={100}
           height={100}
