@@ -2,6 +2,9 @@
 
 import { auth } from "@/auth";
 import { db } from "@/db";
+import path from "@/path";
+import { CartItem } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const CartSchema = z.object({
@@ -32,16 +35,35 @@ export async function createCartItem(formData: FormData) {
   const productId = formData.get("productId") as string;
   const cartId = formData.get("cartId") as string;
   const wishlistId = formData.get("wishlistId") as string;
+  let returnedItem: CartItem;
 
   try {
-    return await db.cartItem.create({
-      data: {
-        productId,
-        cartId,
-        quantity,
-        wishlistId,
-      },
+    const existing = await db.cart.findFirst({
+      where: { items: { some: { productId } } },
+      include: { items: { where: { productId }, select: { productId: true } } },
     });
+
+    if (existing) {
+      const existingItem = await db.cartItem.findFirst({
+        where: { productId },
+      });
+
+      if (existingItem?.quantity) {
+        returnedItem = await db.cartItem.update({
+          where: { id: existingItem?.id },
+          data: { quantity: existingItem?.quantity + quantity },
+        });
+      }
+    } else {
+      returnedItem = await db.cartItem.create({
+        data: {
+          productId,
+          cartId,
+          quantity,
+          wishlistId,
+        },
+      });
+    }
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -57,5 +79,7 @@ export async function createCartItem(formData: FormData) {
       };
     }
   }
-  // TODO: When it's not a visible path, what should be revalidated?
+  revalidatePath(path.cart());
+  // @ts-ignore
+  return returnedItem;
 }
