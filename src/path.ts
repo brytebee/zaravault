@@ -2,6 +2,9 @@ export const path = {
   home() {
     return "/";
   },
+  cart() {
+    return "/cart";
+  },
   categories() {
     return "/categories";
   },
