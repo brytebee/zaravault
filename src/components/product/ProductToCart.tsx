@@ -72,6 +72,7 @@ export default function ProductToCart({ prod }: ProdProps) {
   return (
     <form onSubmit={handler} className="mb-4 border rounded-lg shadow-md p-4">
       <div className="flex items-center mb-4">
+        {/* Add multi image funtionality later */}
         <Image
           // @ts-ignore
           src={prod.images[0].url}
