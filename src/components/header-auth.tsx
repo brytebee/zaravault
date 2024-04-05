@@ -35,7 +35,9 @@ export default function HeaderAuth() {
           </PopoverTrigger>
           <PopoverContent>
             <form action={actions.signOut}>
-              <Button type="submit">Sign Out</Button>
+              <Button type="submit" className="text-purple-800">
+                Sign Out
+              </Button>
             </form>
           </PopoverContent>
         </Popover>
@@ -46,14 +48,18 @@ export default function HeaderAuth() {
       <>
         <NavbarItem>
           <Link href="/api/auth/signin">
-            <Button type="submit" color="secondary" variant="bordered">
+            <Button
+              type="submit"
+              className="text-purple-800"
+              variant="bordered"
+            >
               Sign In
             </Button>
           </Link>
         </NavbarItem>
         <NavbarItem>
           <Link href="/api/auth/register">
-            <Button type="submit" color="primary" variant="flat">
+            <Button type="submit" className="text-purple-800" variant="flat">
               Sign Up
             </Button>
           </Link>
