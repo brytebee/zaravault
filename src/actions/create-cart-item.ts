@@ -39,13 +39,13 @@ export async function createCartItem(formData: FormData) {
 
   try {
     const existing = await db.cart.findFirst({
-      where: { items: { some: { productId } } },
+      where: { userId: session.user.id, items: { some: { productId } } },
       include: { items: { where: { productId }, select: { productId: true } } },
     });
 
     if (existing) {
       const existingItem = await db.cartItem.findFirst({
-        where: { productId },
+        where: { productId, cartId },
       });
 
       if (existingItem?.quantity) {

@@ -7,8 +7,15 @@ import {
 import Link from "next/link";
 import HeaderAuth from "./header-auth";
 import SearchMirror from "./assets/svg/SearchMirror";
+import fetchCart from "@/actions/fetch-cart";
 
 export async function Header() {
+  let cartArray: string[] = [];
+  const userCart = await fetchCart();
+  if (userCart) {
+    cartArray = userCart.map((id) => id.productId);
+  }
+
   return (
     <Navbar className="shadow mb-6 bg-white">
       <NavbarBrand>
@@ -26,7 +33,7 @@ export async function Header() {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <HeaderAuth />
+        <HeaderAuth cart={cartArray} />
       </NavbarContent>
     </Navbar>
   );

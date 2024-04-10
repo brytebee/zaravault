@@ -14,12 +14,24 @@ import Link from "next/link";
 import Cart from "./assets/svg/Cart";
 import { cartStore } from "@/store";
 import path from "@/path";
+import { useEffect } from "react";
 
-export default function HeaderAuth() {
+interface HeaderAuthProps {
+  cart: any;
+}
+
+export default function HeaderAuth({ cart }: HeaderAuthProps) {
   const session = useSession();
   const { ids } = cartStore();
-
   let authContent: React.ReactNode;
+
+  useEffect(() => {
+    window.localStorage.getItem(cart);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("cart", JSON.stringify(cart));
+      cartStore.getState().setIds(cart);
+    }
+  }, []);
 
   if (session.status === "loading") {
     authContent = null;
@@ -68,6 +80,5 @@ export default function HeaderAuth() {
       </>
     );
   }
-
   return authContent;
 }
