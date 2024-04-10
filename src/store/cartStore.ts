@@ -36,7 +36,7 @@ const persistableCartStore = persist<Cart>(
         ids: state.ids.filter((itemId) => itemId !== id),
       })),
     setIds: (ids) =>
-      set((state) => ({
+      set(() => ({
         ids: ids,
       })),
   }),

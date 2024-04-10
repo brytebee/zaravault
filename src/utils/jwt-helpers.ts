@@ -12,17 +12,14 @@ export function encryptCode(code: string) {
     expiresIn: "10m",
     algorithm: "HS256",
   });
-  console.log(token);
   return token;
 }
 
 export function decryptCode(token: any) {
   try {
     const decoded = verify(token, SECRET, { algorithms: ["HS256"] });
-    console.log("Decoded payload:", decoded);
     return decoded;
   } catch (error) {
-    console.error("Error decoding token:", error);
     return error;
   }
 }

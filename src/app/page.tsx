@@ -1,7 +1,7 @@
 import path from "@/path";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div>
       <p>This page is for featured products</p>

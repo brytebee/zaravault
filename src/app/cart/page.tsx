@@ -15,8 +15,8 @@ export default async function CartPage() {
     <div>
       <h1>This is the cart page</h1>
       {cartItems.length &&
-        cartItems.map((item) => (
-          <div key={item.id}>
+        cartItems.map((item, i) => (
+          <div key={i}>
             <h4>{item.productId}</h4>
             <h4>{item.quantity}</h4>
             <h4>{item.cartId}</h4>
