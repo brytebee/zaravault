@@ -71,7 +71,7 @@ export default function ProductToCart({ prod }: ProdProps) {
           <p className="text-gray-800 font-semibold">${prod.price}</p>
         </div>
       </div>
-
+      {/* You can disable the input and ensure the button doesn't work */}
       {prod.quantity > 1 ? (
         <>
           <div className="flex items-center my-2 h-fit">
