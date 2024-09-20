@@ -40,7 +40,6 @@ const persistableCartStore = persist<Cart>(
         ids: ids,
       })),
   }),
-
   {
     name: "cart-store",
     storage: customStorage,
