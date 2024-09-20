@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import FormButton from "../common/form-button";
+import FormButton from "@/components/common/form-button";
 import { createCart, createCartItem } from "@/actions";
 import { useSession } from "next-auth/react";
 import { cartStore } from "@/store";
@@ -17,9 +17,22 @@ interface ProdProps {
 }
 
 export default function ProductToCart({ prod }: ProdProps) {
-  const session = useSession();
+  const { data: session, status } = useSession();
   const { addItem } = cartStore();
-  const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleIncrement = () => {
+    if (quantity < prod.quantity) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
 
   const handler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,28 +41,27 @@ export default function ProductToCart({ prod }: ProdProps) {
     try {
       const cart = await createCart();
 
-      // @ts-ignore
-      if (cart.errors) {
-        // @ts-ignore
-        setError(cart.errors);
+      if ("errors" in cart) {
+        setError(cart.errors._form?.[0] || "An error occurred");
       } else {
-        // @ts-ignore
         formData.append("cartId", cart.id);
         formData.append("productId", prod.id);
+        formData.append("quantity", quantity.toString());
 
         const item = await createCartItem(formData);
 
-        addItem(prod.id);
-        // @ts-ignore
-        if (item.errors) {
-          // @ts-ignore
-          setError(item.errors);
+        if ("errors" in item) {
+          setError(item.errors._form?.[0] || "An error occurred");
+        } else {
+          addItem(prod.id);
+          setError(null); // Clear error if everything is successful
         }
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        // @ts-ignore
-        setError({ _form: err.message });
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
       }
     }
   };
@@ -57,7 +69,6 @@ export default function ProductToCart({ prod }: ProdProps) {
   return (
     <form onSubmit={handler} className="mb-4 border rounded-lg shadow-md p-4">
       <div className="flex items-center mb-4">
-        {/* Add multi image funtionality later */}
         <Image
           src={prod.images?.[0]?.url ?? ""}
           alt={prod.slug}
@@ -71,25 +82,30 @@ export default function ProductToCart({ prod }: ProdProps) {
           <p className="text-gray-800 font-semibold">${prod.price}</p>
         </div>
       </div>
-      {/* You can disable the input and ensure the button doesn't work */}
-      {prod.quantity > 1 ? (
+
+      {prod.quantity > 0 ? (
         <>
-          <div className="flex items-center my-2 h-fit">
-            <input
-              type="number"
-              name="quantity"
-              min={1}
-              max={prod.quantity}
-              defaultValue={1}
-              className="w-16 py-1 px-2 border border-gray-300 rounded-md mr-2"
-            />
-            <p className="text-gray-600">In stock: {prod.quantity}</p>
+          <div className="flex items-center my-2">
+            <button
+              type="button"
+              onClick={handleDecrement}
+              className="py-1 px-2 border border-gray-300 rounded-md mr-2"
+            >
+              -
+            </button>
+            <p className="text-gray-600">{quantity}</p>
+            <button
+              type="button"
+              onClick={handleIncrement}
+              className="py-1 px-2 border border-gray-300 rounded-md ml-2"
+            >
+              +
+            </button>
+            <p className="text-gray-600 ml-2">In stock: {prod.quantity}</p>
           </div>
-          {/* @ts-ignore */}
-          {error && <p className="text-red-500">{error._form}</p>}
-          {session.status === "authenticated" && (
-            <FormButton>Add to Cart</FormButton>
-          )}
+
+          {error && <p className="text-red-500">{error}</p>}
+          {status === "authenticated" && <FormButton>Add to Cart</FormButton>}
         </>
       ) : (
         <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md">
