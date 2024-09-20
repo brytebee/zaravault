@@ -14,7 +14,7 @@ export default async function CategoriesPage() {
         <div>
           {category.map((cat) => (
             // Category card
-            <div>
+            <div key={cat.id}>
               <Link href={path.products(cat.name)}>
                 <p>{cat.name}</p>
               </Link>

@@ -1,27 +1,45 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
+import { CartProvider } from "@/context/cart-context"; // Import CartProvider
+import CartClient from "@/components/cart/CartClient";
 
 export default async function CartPage() {
   const session = await auth();
-  const cart = await db.cart.findFirst({ where: { userId: session?.user.id } });
+  const cart = await db.cart.findFirst({
+    where: { userId: session?.user.id },
+    select: {
+      _count: true,
+      items: {
+        select: {
+          id: true,
+          quantity: true,
+          product: {
+            select: {
+              id: true,
+              slug: true,
+              price: true,
+              quantity: true,
+              description: true,
+              images: true,
+              category: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
   if (!cart) {
     throw new Error("Something went wrong, item not added to cart!");
   }
-  const cartItems = await db.cartItem.findMany({
-    where: { cartId: cart.id },
-  });
+
+  const { items } = cart;
 
   return (
-    <div>
-      <h1>This is the cart page</h1>
-      {cartItems.length &&
-        cartItems.map((item, i) => (
-          <div key={i}>
-            <h4>{item.productId}</h4>
-            <h4>{item.quantity}</h4>
-            <h4>{item.cartId}</h4>
-          </div>
-        ))}
-    </div>
+    <CartProvider initialItems={items}>
+      {" "}
+      {/* Wrap CartClient with CartProvider */}
+      <CartClient />
+    </CartProvider>
   );
 }
