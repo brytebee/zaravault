@@ -17,21 +17,20 @@ import path from "@/path";
 import { useEffect } from "react";
 
 interface HeaderAuthProps {
-  cart: any;
+  cart: string[];
 }
 
 export default function HeaderAuth({ cart }: HeaderAuthProps) {
   const session = useSession();
-  const { ids } = cartStore();
+  const { ids, setIds } = cartStore();
   let authContent: React.ReactNode;
 
   useEffect(() => {
-    window.localStorage.getItem(cart);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("cart", JSON.stringify(cart));
-      cartStore.getState().setIds(cart);
+      setIds(cart);
     }
-  }, []);
+  }, [cart, setIds]);
 
   if (session.status === "loading") {
     authContent = null;
