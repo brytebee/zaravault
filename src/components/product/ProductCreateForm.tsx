@@ -6,6 +6,8 @@ import { Input, Textarea } from "@nextui-org/react";
 import { useFormState } from "react-dom";
 import FormButton from "@/components/common/form-button";
 import { ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import { MdOutlineClose } from "react-icons/md";
 
 interface ProdCreateProps {
   catName: string;
@@ -17,6 +19,48 @@ export default function ProductCreateForm({ catName }: ProdCreateProps) {
     {}
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append(
+        "upload_preset",
+        process.env.NEXT_PUBLIC_UPLOAD_PRESET as string
+      );
+      formData.append(
+        "cloud_name",
+        process.env.NEXT_PUBLIC_CLOUD_NAME as string
+      );
+
+      // Upload to Cloudinary
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_CLOUDINARY_URL as string,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      const { secure_url, original_filename, format } = data;
+
+      setFileName(`${original_filename?.slice(0, 10)}...${format}`);
+      setUploadedFileName(secure_url);
+      setImageUrl(secure_url);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFileName(null);
+    setImageUrl("");
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -68,6 +112,8 @@ export default function ProductCreateForm({ catName }: ProdCreateProps) {
             required
             className="w-full"
           />
+
+          {/* Add quantity and price fields here */}
           <div className="grid grid-cols-2 gap-4">
             <Input
               name="quantity"
@@ -90,15 +136,43 @@ export default function ProductCreateForm({ catName }: ProdCreateProps) {
               required
             />
           </div>
+
+          <div className="flex items-center space-x-4">
+            {uploadedFileName ? (
+              <div className="flex items-center space-x-4">
+                <Image
+                  src={uploadedFileName}
+                  alt="uploaded preview"
+                  width={100}
+                  height={100}
+                  className="rounded-lg shadow-sm"
+                />
+                <div className="text-gray-700">{fileName}</div>
+                <MdOutlineClose
+                  onClick={handleRemoveFile}
+                  className="cursor-pointer"
+                />
+              </div>
+            ) : (
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                className="p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 shadow-sm"
+                onChange={handleFileChange}
+              />
+            )}
+          </div>
+
           {formState.errors?._form && (
             <div className="rounded-lg border-2 border-red-500 bg-red-100 p-3 text-red-700">
-              {formState.errors._form.join(", ")}
+              {formState.errors._form?.join(", ")}
             </div>
           )}
+
           <FormButton
-            type="submit"
+            className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-3 rounded-lg font-semibold transition duration-300 hover:from-purple-600 hover:to-indigo-700"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-500 to-teal-500 text-white py-3 rounded-lg font-semibold transition duration-300 hover:from-blue-600 hover:to-teal-600"
           >
             {isSubmitting ? "Creating..." : "Create Product"}
           </FormButton>

@@ -1,3 +1,4 @@
+import React from "react";
 import ProductToCart from "@/components/product/ProductToCart";
 import { db } from "@/db";
 import path from "@/path";
@@ -5,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Product, Image as PrismaImage } from "@prisma/client";
 import Image from "next/image";
+import { ArrowLeft, Star } from "lucide-react"; // Import icons
 
 interface ProductShowPageProps {
   params: {
@@ -29,110 +31,104 @@ export default async function ProductShowPage({
     notFound();
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="text-center my-8">
-        <h1 className="text-3xl font-bold text-violet-950 capitalize">
-          {product?.slug ?? "Product Details"}
-        </h1>
-        <p className="text-gray-600 mt-2">{product?.description}</p>
-      </header>
+  // Mock data for additional product information
+  const rating = 4.5;
+  const reviews = 128;
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          {product?.images?.length ? (
-            <Image
-              src={product.images[0].url}
-              alt={product.slug}
-              width={500}
-              height={500}
-              className="rounded-lg"
-            />
-          ) : (
-            <p>No image available</p>
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <Link
+        href={path.products(catName)}
+        className="inline-flex items-center text-violet-600 hover:text-violet-800 transition mb-6"
+      >
+        <ArrowLeft className="mr-2 h-5 w-5" />
+        Back to {catName} products
+      </Link>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-6">
+          <div className="bg-gray-100 rounded-xl p-4 flex items-center justify-center">
+            {product?.images?.length ? (
+              <Image
+                src={product.images[0].url}
+                alt={product.slug}
+                width={600}
+                height={600}
+                className="rounded-lg object-contain max-h-[600px]"
+              />
+            ) : (
+              <div className="h-[600px] w-full flex items-center justify-center bg-gray-200 rounded-lg">
+                <p className="text-gray-500 text-xl">No image available</p>
+              </div>
+            )}
+          </div>
+          {product?.images?.length > 1 && (
+            <div className="flex space-x-4 overflow-x-auto py-2">
+              {product.images.slice(1).map((image, index) => (
+                <Image
+                  key={image.id}
+                  src={image.url}
+                  alt={`${product.slug} - Image ${index + 2}`}
+                  width={100}
+                  height={100}
+                  className="rounded-md object-cover cursor-pointer hover:opacity-80 transition"
+                />
+              ))}
+            </div>
           )}
         </div>
-        <div>
-          <ProductToCart prod={product} />
+
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold text-violet-950 capitalize">
+            {product?.slug ?? "Product Details"}
+          </h1>
+          <p className="text-gray-600 text-lg">{product?.description}</p>
+
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-5 w-5 ${
+                    i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                  fill="currentColor"
+                />
+              ))}
+            </div>
+            <span className="text-gray-600">
+              {rating} ({reviews} reviews)
+            </span>
+          </div>
+
+          <div className="text-3xl font-bold text-violet-950">
+            ${product?.price.toFixed(2)}
+          </div>
+
+          <div className="py-4">
+            <ProductToCart prod={product} />
+          </div>
+
+          <div className="border-t border-gray-200 pt-6">
+            <h2 className="text-xl font-semibold mb-4">Product Details</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-600">
+              <li>Category: {catName}</li>
+              <li>SKU: {product?.id.slice(0, 8).toUpperCase()}</li>
+              {/* Add more product details as needed */}
+            </ul>
+          </div>
         </div>
       </div>
 
-      <footer className="text-center my-8">
-        <Link
-          href={path.products(catName)}
-          className="mt-4 inline-block bg-violet-950 text-white py-2 px-4 rounded hover:bg-violet-700 transition"
-        >
-          Back to {catName} products
-        </Link>
-      </footer>
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold text-violet-950 mb-6">
+          Related Products
+        </h2>
+        {/* Add a carousel or grid of related products here */}
+        <p className="text-gray-600">
+          Coming soon: Related products from the {catName} category.
+        </p>
+      </div>
     </div>
   );
 }
-
-// export default async function ProductShowPage({
-//   params: { catName, prodId },
-// }: ProductShowPageProps) {
-//   const product = await db.product.findUnique({
-//     where: { id: prodId },
-//     include: { images: true },
-//   });
-
-//   if (!product) {
-//     notFound();
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <Link
-//         href={path.categoryShow(catName)}
-//         className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
-//       >
-//         <ArrowLeft className="mr-2 h-4 w-4" />
-//         Back to {catName} products
-//       </Link>
-
-//       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//         <div className="space-y-4">
-//           {product.images && product.images.length > 0 ? (
-//             <div className="relative h-96 rounded-lg overflow-hidden">
-//               <Image
-//                 src={product.images[0].url}
-//                 alt={product.slug}
-//                 layout="fill"
-//                 objectFit="cover"
-//                 className="transition-transform duration-300 hover:scale-105"
-//               />
-//             </div>
-//           ) : (
-//             <div className="h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-//               <p className="text-gray-500">No image available</p>
-//             </div>
-//           )}
-//         </div>
-
-//         <div>
-//           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-//             {product.slug}
-//           </h1>
-//           <p className="text-xl font-semibold text-blue-600 mb-4">
-//             ${product.price.toFixed(2)}
-//           </p>
-//           <p className="text-gray-600 mb-6">{product.description}</p>
-
-//           <ProductToCart prod={product} />
-
-//           <div className="mt-8">
-//             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-//               Product Details
-//             </h2>
-//             <ul className="list-disc list-inside text-gray-600">
-//               <li>Category: {catName}</li>
-//               <li>SKU: {product.id}</li>
-//               {/* Add more product details as needed */}
-//             </ul>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
