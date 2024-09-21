@@ -1,13 +1,38 @@
+import React, { ReactNode } from "react";
+
 interface BtnProps {
-  text: string;
+  handleClick?: () => void;
+  text?: string;
   className?: string;
-  handleClick: () => void;
+  "aria-label"?: string;
+  disabled?: boolean;
+  children?: ReactNode; // Add children prop to accept any React nodes
+  asChild?: boolean; // Add an optional asChild prop to support wrapping
 }
 
-export default function Button({ text, className, handleClick }: BtnProps) {
+const Button: React.FC<BtnProps> = ({
+  handleClick,
+  text,
+  className = "",
+  "aria-label": ariaLabel,
+  disabled = false,
+  children, // Accept children
+  asChild = false,
+}) => {
+  const Component = asChild ? "div" : "button"; // Use "div" or "button" based on `asChild`
+
   return (
-    <button onClick={handleClick} className={className}>
-      {text}
-    </button>
+    <Component
+      onClick={handleClick}
+      className={`inline-flex items-center justify-center ${className} ${
+        disabled ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+      aria-label={ariaLabel}
+      disabled={disabled} // Only works if it's a button element
+    >
+      {text || children} {/* Render text or children */}
+    </Component>
   );
-}
+};
+
+export default Button;

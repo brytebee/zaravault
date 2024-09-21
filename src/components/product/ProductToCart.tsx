@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { cartStore } from "@/store";
 import Image from "next/image";
 import { Product } from "@prisma/client";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
 
 type Props = Product & {
   images: { url: string | null; productId: string }[];
@@ -105,7 +106,12 @@ export default function ProductToCart({ prod }: ProdProps) {
           </div>
 
           {error && <p className="text-red-500">{error}</p>}
-          {status === "authenticated" && <FormButton>Add to Cart</FormButton>}
+          {status === "authenticated" && (
+            <FormButton>
+              <ShoppingCart />
+              Add to Cart
+            </FormButton>
+          )}
         </>
       ) : (
         <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md">

@@ -7,6 +7,10 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
@@ -23,7 +27,6 @@ interface HeaderAuthProps {
 export default function HeaderAuth({ cart }: HeaderAuthProps) {
   const session = useSession();
   const { ids, setIds } = cartStore();
-  let authContent: React.ReactNode;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,51 +36,65 @@ export default function HeaderAuth({ cart }: HeaderAuthProps) {
   }, [cart, setIds]);
 
   if (session.status === "loading") {
-    authContent = null;
-  } else if (session.data?.user) {
-    authContent = (
-      <>
-        <Link className="flex" href={path.cart()}>
-          <Cart count={ids.length} />
-          Cart
-        </Link>
-        <Popover placement="left">
-          <PopoverTrigger>
-            <Avatar src={session.data.user.image || ""} />
-          </PopoverTrigger>
-          <PopoverContent>
-            <form action={actions.signOut}>
-              <Button type="submit" className="text-purple-800">
-                Sign Out
-              </Button>
-            </form>
-          </PopoverContent>
-        </Popover>
-      </>
-    );
-  } else {
-    authContent = (
+    return null;
+  }
+
+  if (session.data?.user) {
+    return (
       <>
         <NavbarItem>
-          <Link href="/api/auth/signin">
-            <Button
-              type="submit"
-              className="text-purple-800"
-              variant="bordered"
-            >
-              Sign In
-            </Button>
+          <Link className="flex items-center" href={path.cart()}>
+            <Cart count={ids.length} />
+            <span className="ml-1 hidden sm:inline">Cart</span>
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link href="/api/auth/register">
-            <Button type="submit" className="text-purple-800" variant="flat">
-              Sign Up
-            </Button>
-          </Link>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                as="button"
+                className="transition-transform"
+                src={session.data.user.image || ""}
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="User menu actions" color="secondary">
+              <DropdownItem key="profile" className="h-14 gap-2">
+                <p className="font-bold">Signed in as</p>
+                <p className="font-bold">{session.data.user.email}</p>
+              </DropdownItem>
+              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="orders">My Orders</DropdownItem>
+              <DropdownItem key="help_and_feedback">
+                Help & Feedback
+              </DropdownItem>
+              <DropdownItem key="logout" color="danger">
+                <form action={actions.signOut}>
+                  <Button type="submit" className="text-purple-800 w-full">
+                    Sign Out
+                  </Button>
+                </form>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </NavbarItem>
       </>
     );
   }
-  return authContent;
+
+  return (
+    <>
+      <NavbarItem>
+        <Link href="/api/auth/signin">
+          <Button className="text-purple-800" variant="bordered">
+            Sign In
+          </Button>
+        </Link>
+      </NavbarItem>
+      <NavbarItem>
+        <Link href="/api/auth/register">
+          <Button className="bg-purple-800 text-white">Sign Up</Button>
+        </Link>
+      </NavbarItem>
+    </>
+  );
 }
