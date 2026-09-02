@@ -1,3 +1,9 @@
+import CategoryCreateForm from "@/components/category/category-create-form";
+
 export default function CategoryCreatePage() {
-  return <div>Category create page</div>;
+  return (
+    <div>
+      <CategoryCreateForm />
+    </div>
+  );
 }

@@ -6,12 +6,13 @@ import Google from "next-auth/providers/google";
 import credentials from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { User } from "@prisma/client";
-
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const AUTH_SECRET = process.env.AUTH_SECRET;
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  AUTH_SECRET,
+} from "@/utils/constants";
 
 if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET || !AUTH_SECRET) {
   throw new Error("Missing GitHub auth credentials!");
@@ -52,14 +53,6 @@ export const {
     maxAge: 60 * 60 * 30,
   },
   providers: [
-    Github({
-      clientId: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET,
-    }),
-    Google({
-      clientId: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-    }),
     credentials({
       name: "Credentials",
       credentials: {
@@ -83,20 +76,27 @@ export const {
         return null;
       },
     }),
+    Github({
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
+    }),
+    Google({
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+    }),
   ],
   callbacks: {
-    async session({ session, user }: any) {
-      if (session && user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
-    jwt: async ({ token, user }) => {
+    async jwt({ token, user }) {
       if (user) {
-        token.email = user.email;
-        token.userId = user.id;
+        token = { ...token, ...user };
       }
       return token;
+    },
+    async session({ session, token }: any) {
+      if (token) {
+        session.user = token;
+      }
+      return session;
     },
   },
   secret: AUTH_SECRET,
