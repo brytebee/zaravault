@@ -6,7 +6,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Product, Image as PrismaImage } from "@prisma/client";
 import Image from "next/image";
-import { ArrowLeft, Star } from "lucide-react"; // Import icons
+import { ArrowLeft } from "lucide-react";
+import ProductReviews from "@/components/product/ProductReviews"; // Import the new component
 
 interface ProductShowPageProps {
   params: {
@@ -18,6 +19,46 @@ interface ProductShowPageProps {
 interface ProductWithImages extends Product {
   images: PrismaImage[];
 }
+
+interface Review {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+// Mock data for reviews
+const mockReviews: Review[] = [
+  {
+    id: "1",
+    userName: "John Doe",
+    rating: 5,
+    comment: "Excellent product! Exactly what I was looking for.",
+    date: "2023-09-15",
+  },
+  {
+    id: "2",
+    userName: "Jane Smith",
+    rating: 4,
+    comment: "Good quality, but shipping took longer than expected.",
+    date: "2023-09-10",
+  },
+  {
+    id: "3",
+    userName: "Mike Johnson",
+    rating: 5,
+    comment: "Fantastic value for money. Highly recommended!",
+    date: "2023-09-05",
+  },
+  {
+    id: "4",
+    userName: "Emily Brown",
+    rating: 3,
+    comment: "Decent product, but not as durable as I hoped.",
+    date: "2023-08-30",
+  },
+];
 
 export default async function ProductShowPage({
   params: { catName, prodId },
@@ -31,9 +72,10 @@ export default async function ProductShowPage({
     notFound();
   }
 
-  // Mock data for additional product information
-  const rating = 4.5;
-  const reviews = 128;
+  // Calculate average rating
+  const averageRating =
+    mockReviews.reduce((acc, review) => acc + review.rating, 0) /
+    mockReviews.length;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -84,23 +126,6 @@ export default async function ProductShowPage({
           </h1>
           <p className="text-gray-600 text-lg">{product?.description}</p>
 
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-5 w-5 ${
-                    i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
-                  }`}
-                  fill="currentColor"
-                />
-              ))}
-            </div>
-            <span className="text-gray-600">
-              {rating} ({reviews} reviews)
-            </span>
-          </div>
-
           <div className="text-3xl font-bold text-violet-950">
             ${product?.price.toFixed(2)}
           </div>
@@ -120,11 +145,13 @@ export default async function ProductShowPage({
         </div>
       </div>
 
+      {/* Reviews section */}
+      <ProductReviews reviews={mockReviews} averageRating={averageRating} />
+
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-violet-950 mb-6">
           Related Products
         </h2>
-        {/* Add a carousel or grid of related products here */}
         <p className="text-gray-600">
           Coming soon: Related products from the {catName} category.
         </p>
